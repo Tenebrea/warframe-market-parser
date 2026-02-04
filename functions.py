@@ -7,9 +7,9 @@ def get_prices(name: str, d: dict, type: str, crossplatform: bool, platform: str
             continue
         if item["user"]["status"] == "offline":
             continue
-        if item["platform"] != platform:
-            continue
         if crossplatform != item["user"]["crossplatform"]:
+            continue
+        if item["platform"] != platform and not item["user"]["crossplatform"]:
             continue
 
         result_item = {
@@ -24,7 +24,7 @@ def get_prices(name: str, d: dict, type: str, crossplatform: bool, platform: str
     return result
 
 def message_parser(d: dict, quantity: int) -> str:
-    return f"/w {d["ingameName"]} Hi! I want to buy: {quantity} '{d["name"]}' for {d["price"]} platinum each. (warframe.market)"
+    return f"/w {d['ingameName']} Hi! I want to buy: {quantity} '{d['name']}' for {d['price']} platinum each. (warframe.market)"
 
 def filter_by_price(l: list, price: int) -> list:
     result = []

@@ -5,12 +5,17 @@ import json
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5 import QtCore
 from main_gui import Ui_MainWindow
+import functions
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.username = ""
+        self.platform = "pc"
+
+
 
         self.ui.marketTable.viewport().installEventFilter(self)
         # self.ui.add_btn.clicked.connect(self.add_item)
@@ -30,6 +35,16 @@ class MainWindow(QMainWindow):
                 if not index.isValid():
                     self.ui.marketTable.clearSelection()
         return super().eventFilter(obj, event)
+
+    # Добавить поля ввода ника(поле ввода текста), платформы(выпадающий список) и кроссплатформенности(галочка)
+    def search(self):
+        columns = ["icon", "username", "item", "type", "amount", "price", "wantedPrice", ]
+        item = "atlas_prime_set"# получение названия предмета из поля
+        type = "sell" #Получать продажа/покупка из поля
+        request = dict(requests.get(f"https://api.warframe.market/v2/orders/item/{item}"))
+        result = functions.get_prices(self.name, request, type, self.crossplatform, self.platform)
+
+        for
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
