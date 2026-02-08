@@ -2,22 +2,21 @@ import sys
 
 import requests
 import json
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 from PyQt5 import QtCore
 from main_gui import Ui_MainWindow
-import functions
+from second_gui import Ui_SettingsWindow
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.username = ""
-        self.platform = "pc"
-
-
+        self.settings_window = SettingsWindow()
 
         self.ui.marketTable.viewport().installEventFilter(self)
+        self.ui.settings_btn.clicked.connect(self.open_settings)
+
         # self.ui.add_btn.clicked.connect(self.add_item)
         # self.ui.delete_btn.clicked.connect(self.delete_item)
 
@@ -36,15 +35,17 @@ class MainWindow(QMainWindow):
                     self.ui.marketTable.clearSelection()
         return super().eventFilter(obj, event)
 
-    # Добавить поля ввода ника(поле ввода текста), платформы(выпадающий список) и кроссплатформенности(галочка)
-    def search(self):
-        columns = ["icon", "username", "item", "type", "amount", "price", "wantedPrice", ]
-        item = "atlas_prime_set"# получение названия предмета из поля
-        type = "sell" #Получать продажа/покупка из поля
-        request = dict(requests.get(f"https://api.warframe.market/v2/orders/item/{item}"))
-        result = functions.get_prices(self.name, request, type, self.crossplatform, self.platform)
+    def open_settings(self):
+        self.settings_window.show()
+        self.settings_window.raise_()
+        self.settings_window.activateWindow()
 
-        for
+class SettingsWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.ui = Ui_SettingsWindow()
+        self.ui.setupUi(self)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -55,37 +56,37 @@ if __name__ == '__main__':
 
 
 
-# def collect_data(item):
-#     url_name = warframe_to_url(item)
-#     r = requests.get(f"https://api.warframe.market/v2/orders/item/{url_name}")
-#     r_json = r.json()
-#
-#     #https://api.warframe.market/v2/item/atlas_prime_set/set
-#     #https://api.warframe.market/v2/items/atlas_prime_set
-#     #https://api.warframe.market/v2/riven/weapon/{}
-#     #https://api.warframe.market/v2/orders/item/atlas_prime_set
-#
-#     with open('min.json', 'w') as file:
-#         json.dump(r_json, file, indent=4, ensure_ascii=False)
-#
-# def warframe_to_url(item):
-#
-#     if item.lower() == "атлас прайм сет":
-#         url_name = "atlas_prime_set"
-#     elif item.lower() == "атлас прайм комплект":
-#         url_name = "atlas_prime_set"
-#     elif item.lower() == "атлас прайм каркас":
-#         url_name = "atlas_prime_chassis"
-#     elif item.lower() == "атлас прайм система":
-#         url_name = "atlas_prime_systems"
-#     elif item.lower() == "атлас прайм нейрооптика":
-#         url_name = "atlas_prime_neuroptics"
-#     elif item.lower() == "атлас прайм чертёж":
-#         url_name = "atlas_prime_blueprint"
-#     elif item.lower() == "атлас прайм чертеж":
-#         url_name = "atlas_prime_blueprint"
-#
-#     return url_name
-#
-#
-# collect_data("атлас прайм сет")
+def collect_data(item):
+    url_name = warframe_to_url(item)
+    r = requests.get(f"https://api.warframe.market/v2/orders/item/{url_name}")
+    r_json = r.json()
+
+    #https://api.warframe.market/v2/item/atlas_prime_set/set
+    #https://api.warframe.market/v2/items/atlas_prime_set
+    #https://api.warframe.market/v2/riven/weapon/{}
+    #https://api.warframe.market/v2/orders/item/atlas_prime_set
+
+    with open('min.json', 'w') as file:
+        json.dump(r_json, file, indent=4, ensure_ascii=False)
+
+def warframe_to_url(item):
+
+    if item.lower() == "атлас прайм сет":
+        url_name = "atlas_prime_set"
+    elif item.lower() == "атлас прайм комплект":
+        url_name = "atlas_prime_set"
+    elif item.lower() == "атлас прайм каркас":
+        url_name = "atlas_prime_chassis"
+    elif item.lower() == "атлас прайм система":
+        url_name = "atlas_prime_systems"
+    elif item.lower() == "атлас прайм нейрооптика":
+        url_name = "atlas_prime_neuroptics"
+    elif item.lower() == "атлас прайм чертёж":
+        url_name = "atlas_prime_blueprint"
+    elif item.lower() == "атлас прайм чертеж":
+        url_name = "atlas_prime_blueprint"
+
+    return url_name
+
+
+collect_data("атлас прайм сет")

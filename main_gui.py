@@ -14,7 +14,14 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1250, 835)
+        MainWindow.resize(1250, 880)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
+        MainWindow.setSizePolicy(sizePolicy)
+        MainWindow.setMinimumSize(QtCore.QSize(1250, 880))
+        MainWindow.setMaximumSize(QtCore.QSize(1250, 880))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/icons/warf_parser_mini_imresizer.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -24,7 +31,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.marketTable = QtWidgets.QTableWidget(self.centralwidget)
-        self.marketTable.setGeometry(QtCore.QRect(4, 130, 1245, 611))
+        self.marketTable.setGeometry(QtCore.QRect(4, 175, 1245, 611))
         self.marketTable.setFocusPolicy(QtCore.Qt.NoFocus)
         self.marketTable.setToolTip("")
         self.marketTable.setStyleSheet("QHeaderView::section {\n"
@@ -122,7 +129,7 @@ class Ui_MainWindow(object):
         self.marketTable.horizontalHeader().setCascadingSectionResizes(True)
         self.marketTable.horizontalHeader().setDefaultSectionSize(135)
         self.add_btn = QtWidgets.QPushButton(self.centralwidget)
-        self.add_btn.setGeometry(QtCore.QRect(445, 770, 171, 28))
+        self.add_btn.setGeometry(QtCore.QRect(445, 815, 171, 28))
         self.add_btn.setStyleSheet("color: #18252a;\n"
 "background-color: #418fa5;\n"
 "font-weight: bold;")
@@ -131,7 +138,7 @@ class Ui_MainWindow(object):
         self.add_btn.setIcon(icon1)
         self.add_btn.setObjectName("add_btn")
         self.delete_btn = QtWidgets.QPushButton(self.centralwidget)
-        self.delete_btn.setGeometry(QtCore.QRect(675, 770, 171, 28))
+        self.delete_btn.setGeometry(QtCore.QRect(675, 815, 171, 28))
         self.delete_btn.setStyleSheet("color: #18252a;\n"
 "background-color: #418fa5;\n"
 "font-weight: bold;")
@@ -140,7 +147,7 @@ class Ui_MainWindow(object):
         self.delete_btn.setIcon(icon2)
         self.delete_btn.setObjectName("delete_btn")
         self.buy_btn = QtWidgets.QPushButton(self.centralwidget)
-        self.buy_btn.setGeometry(QtCore.QRect(1130, 180, 111, 28))
+        self.buy_btn.setGeometry(QtCore.QRect(1130, 225, 111, 28))
         self.buy_btn.setStyleSheet("QPushButton {\n"
 "color: #418fa5;\n"
 "border: 1px solid #418fa5;\n"
@@ -158,7 +165,7 @@ class Ui_MainWindow(object):
         self.buy_btn.setIcon(icon3)
         self.buy_btn.setObjectName("buy_btn")
         self.buy_btn_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.buy_btn_2.setGeometry(QtCore.QRect(1130, 215, 111, 28))
+        self.buy_btn_2.setGeometry(QtCore.QRect(1130, 260, 111, 28))
         self.buy_btn_2.setStyleSheet("QPushButton {\n"
 "color: #418fa5;\n"
 "border: 1px solid #418fa5;\n"
@@ -174,17 +181,13 @@ class Ui_MainWindow(object):
         self.buy_btn_2.setIcon(icon4)
         self.buy_btn_2.setObjectName("buy_btn_2")
         self.layoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.layoutWidget.setGeometry(QtCore.QRect(1, 0, 1238, 130))
+        self.layoutWidget.setGeometry(QtCore.QRect(160, 0, 801, 171))
         self.layoutWidget.setObjectName("layoutWidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.layoutWidget)
-        self.horizontalLayout.setContentsMargins(0, 10, 0, 10)
+        self.horizontalLayout.setContentsMargins(0, 45, 0, 10)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.logo_label = QtWidgets.QLabel(self.layoutWidget)
-        self.logo_label.setEnabled(True)
-        self.logo_label.setObjectName("logo_label")
-        self.horizontalLayout.addWidget(self.logo_label)
         self.verticalLayout = QtWidgets.QVBoxLayout()
-        self.verticalLayout.setContentsMargins(-1, -1, 70, -1)
+        self.verticalLayout.setContentsMargins(-1, -1, 5, -1)
         self.verticalLayout.setObjectName("verticalLayout")
         self.label = QtWidgets.QLabel(self.layoutWidget)
         self.label.setStyleSheet("color: #efecec;\n"
@@ -212,14 +215,53 @@ class Ui_MainWindow(object):
         self.label_5.setObjectName("label_5")
         self.verticalLayout.addWidget(self.label_5)
         self.horizontalLayout.addLayout(self.verticalLayout)
-        self.market_logo_label = QtWidgets.QLabel(self.layoutWidget)
+        self.market_logo_label = QtWidgets.QLabel(self.centralwidget)
+        self.market_logo_label.setGeometry(QtCore.QRect(965, 60, 270, 71))
         self.market_logo_label.setOpenExternalLinks(True)
         self.market_logo_label.setObjectName("market_logo_label")
-        self.horizontalLayout.addWidget(self.market_logo_label)
+        self.logo_label = QtWidgets.QLabel(self.centralwidget)
+        self.logo_label.setEnabled(True)
+        self.logo_label.setGeometry(QtCore.QRect(4, 52, 151, 110))
+        self.logo_label.setObjectName("logo_label")
+        self.settings_btn = QtWidgets.QPushButton(self.centralwidget)
+        self.settings_btn.setGeometry(QtCore.QRect(4, 0, 101, 35))
+        icon5 = QtGui.QIcon()
+        icon5.addPixmap(QtGui.QPixmap(":/icons/settings_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.settings_btn.setIcon(icon5)
+        self.settings_btn.setObjectName("settings_btn")
+        self.lbl_name = QtWidgets.QLabel(self.centralwidget)
+        self.lbl_name.setGeometry(QtCore.QRect(161, 0, 55, 35))
+        self.lbl_name.setStyleSheet("color: #efecec;\n"
+"font-weight: bold;")
+        self.lbl_name.setObjectName("lbl_name")
+        self.lbl_current_name = QtWidgets.QLabel(self.centralwidget)
+        self.lbl_current_name.setGeometry(QtCore.QRect(222, 0, 131, 35))
+        self.lbl_current_name.setStyleSheet("color: #efecec;\n"
+"font-weight: bold;")
+        self.lbl_current_name.setObjectName("lbl_current_name")
+        self.lbl_platform = QtWidgets.QLabel(self.centralwidget)
+        self.lbl_platform.setGeometry(QtCore.QRect(420, 0, 91, 35))
+        self.lbl_platform.setStyleSheet("color: #efecec;\n"
+"font-weight: bold;")
+        self.lbl_platform.setObjectName("lbl_platform")
+        self.lbl_current_platform = QtWidgets.QLabel(self.centralwidget)
+        self.lbl_current_platform.setGeometry(QtCore.QRect(520, 0, 101, 35))
+        self.lbl_current_platform.setStyleSheet("color: #efecec;\n"
+"font-weight: bold;")
+        self.lbl_current_platform.setObjectName("lbl_current_platform")
+        self.lbl_crossplat = QtWidgets.QLabel(self.centralwidget)
+        self.lbl_crossplat.setGeometry(QtCore.QRect(710, 0, 171, 35))
+        self.lbl_crossplat.setStyleSheet("color: #efecec;\n"
+"font-weight: bold;")
+        self.lbl_crossplat.setObjectName("lbl_crossplat")
+        self.lbl_current_crossplat = QtWidgets.QLabel(self.centralwidget)
+        self.lbl_current_crossplat.setGeometry(QtCore.QRect(887, 0, 71, 35))
+        self.lbl_current_crossplat.setStyleSheet("color: #efecec;\n"
+"font-weight: bold;")
+        self.lbl_current_crossplat.setObjectName("lbl_current_crossplat")
         MainWindow.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        self.actionactionSettings = QtWidgets.QAction(MainWindow)
+        self.actionactionSettings.setObjectName("actionactionSettings")
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -270,7 +312,6 @@ class Ui_MainWindow(object):
         self.delete_btn.setText(_translate("MainWindow", "Удалить запись"))
         self.buy_btn.setText(_translate("MainWindow", "Купить"))
         self.buy_btn_2.setText(_translate("MainWindow", "Поиск"))
-        self.logo_label.setText(_translate("MainWindow", "<html><head/><body><p><img src=\":/icons/warf_parser_ic_big_imresizer.png\"/></p></body></html>"))
         self.label.setText(_translate("MainWindow", "Инстукция к применению: "))
         self.label_2.setText(_translate("MainWindow", "1.  Выберите желаемый предмет на сайте Warframe.market."))
         self.label_3.setText(_translate("MainWindow", "2.  Заполните необходимые пункты, такие как \"Предмет\", \"Тип операции\", \"Количество\", \"Желаемая цена\"."))
@@ -279,4 +320,13 @@ class Ui_MainWindow(object):
         self.market_logo_label.setText(_translate("MainWindow", "<a href=\"https://warframe.market/\">\n"
 "    <img src=\":/icons/wf_market_logo.png\">\n"
 "</a>"))
+        self.logo_label.setText(_translate("MainWindow", "<html><head/><body><p><img src=\":/icons/warf_parser_ic_big_imresizer.png\"/></p></body></html>"))
+        self.settings_btn.setText(_translate("MainWindow", "Настройки"))
+        self.lbl_name.setText(_translate("MainWindow", "Ник:"))
+        self.lbl_current_name.setText(_translate("MainWindow", " "))
+        self.lbl_platform.setText(_translate("MainWindow", "Платформа:"))
+        self.lbl_current_platform.setText(_translate("MainWindow", " "))
+        self.lbl_crossplat.setText(_translate("MainWindow", "Кроссплатформенность:"))
+        self.lbl_current_crossplat.setText(_translate("MainWindow", " "))
+        self.actionactionSettings.setText(_translate("MainWindow", "actionSettings"))
 import res_icon_rc
