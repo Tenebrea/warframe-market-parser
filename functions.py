@@ -1,15 +1,13 @@
-import json
-
-def get_prices(name: str, d: dict, type: str, crossplatform: bool, platform: str) -> list:
+def get_prices(name: str, l: list, type: str, crossplatform: bool, platform: str) -> list:
     result = []
-    for item in d["data"]:
+    for item in l:
         if item["type"] != type:
             continue
         if item["user"]["status"] == "offline":
             continue
-        if item["platform"] != platform:
+        if item["user"]["platform"] != platform:
             continue
-        if crossplatform != item["user"]["crossplatform"]:
+        if crossplatform != item["user"]["crossplay"]:
             continue
 
         result_item = {
