@@ -115,7 +115,6 @@ class SearchWindow(QWidget):
             "quantity": int(self.quantity.text())
             })
             self.close()
-            window.search_window = None
         except Exception as e:
             self.w = PopupWindow(str(e))
             self.w.show()
