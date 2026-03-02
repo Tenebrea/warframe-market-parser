@@ -195,7 +195,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "WarframeParser"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "PrimeParser"))
         item = self.marketTable.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Иконка"))
         item = self.marketTable.horizontalHeaderItem(1)
