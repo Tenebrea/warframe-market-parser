@@ -72,19 +72,23 @@ class MainWindow(QMainWindow):
         for i in result:
             icon_url = functions.get_api_icon(data["name"])
             image_bytes = functions.download_icon_bytes(icon_url)
-            pixmap = functions.bytes_to_image(image_bytes)
-            pixmap = pixmap.scaled(45, 45, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
-            label = QLabel()
-            label.setPixmap(pixmap)
-            label.setAlignment(Qt.AlignCenter)
 
             row = self.ui.marketTable.rowCount()
             self.ui.marketTable.insertRow(row)
             self.ui.marketTable.setRowHeight(row, 50)
 
-            self.ui.marketTable.setCellWidget(
-                row, 0, label)
+            if image_bytes is not None:
+                pixmap = functions.bytes_to_image(image_bytes)
+                pixmap = pixmap.scaled(45, 45, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                label = QLabel()
+                label.setPixmap(pixmap)
+                label.setAlignment(Qt.AlignCenter)
+                self.ui.marketTable.setCellWidget(
+                    row, 0, label)
+            else:
+                self.ui.marketTable.setItem(
+                    row, 0, QTableWidgetItem("No Image"))
             self.ui.marketTable.setItem(
                 row, 1, QTableWidgetItem(i["ingameName"]))
             self.ui.marketTable.setItem(
