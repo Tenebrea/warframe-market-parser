@@ -61,8 +61,6 @@ def warframe_to_url(text: str) -> str:
     for name, slug in ITEMS_DICT.items():
         if text in name:
             return slug
-        elif text in slug:
-            return slug
 
     return None
 
@@ -93,12 +91,9 @@ def get_api_icon(name: str):
 
 
 def download_icon_bytes(url: str):
-    try:
-        response = requests.get(url, timeout=30)
-        response.raise_for_status()
-        return response.content
-    except:
-        return None
+    response = requests.get(url, timeout=5)
+    response.raise_for_status()
+    return response.content
 
 def bytes_to_image(bytes: bytes):
     pixmap = QPixmap()
@@ -120,8 +115,6 @@ def collect_data_parts(name: str, type: str, platform: str, quantity: int = 1, w
     r = requests.get(f"https://api.warframe.market/v2/orders/item/{url_name}/top")
     r_json = r.json()
 
-    print(r_json)
-
     orders = r_json["data"][type]
 
     if not orders:
@@ -131,24 +124,39 @@ def collect_data_parts(name: str, type: str, platform: str, quantity: int = 1, w
     for item in orders:
         if item["user"]["status"] == "offline":
             continue
-
+        if item["user"]["platform"] != platform:
+            continue
         if crossplay != item["user"]["crossplay"]:
-            if item["user"]["platform"] != platform:
-                continue
+            continue
         if item["user"]["status"] != "ingame":
             continue
-        if item["quantity"] < quantity:
-            continue
-        result_item = {
-            "ingameName": item["user"]["ingameName"],
-            "name": url_name,
-            "type": type,
-            "quantity": item["quantity"],
-            "price": item["platinum"],
-            # "status": best_order["user"]["status"],
-            "date": item["updatedAt"]
-        }
-        result.append(result_item)
+        # if type  == "sell" and item["platinum"] >= want_platinum:
+        #     continue
+        # if type == "buy" and item["platinum"] <= want_platinum:
+        #     continue
+        if item['quantity'] > 1 and item["quantity"] <= quantity:
+                continue
+        best_order = item
+        break
+    else:
+        # print("ЗакаZOV под ваши требования не найдены")
+        return
+
+# мб в список ({} -> [])
+    result_item = {
+        "ingameName": best_order["user"]["ingameName"],
+        "name": url_name,
+        "type": type,
+        "quantity": best_order["quantity"],
+        "price": best_order["platinum"],
+        # "status": best_order["user"]["status"],
+        "date": best_order["updatedAt"]
+    }
+    #
+    # with open('saved_trades.json', 'w', encoding="utf-8") as file:
+    #     json.dump(result_item, file, indent=4, ensure_ascii=False)
+
+    result.append(result_item)
     return result
 
 
