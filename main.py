@@ -1,5 +1,6 @@
 import os.path
 import sys
+from json import JSONDecodeError
 from unittest import result
 
 import settings_manager
@@ -25,10 +26,12 @@ class MainWindow(QMainWindow):
         self.settings_window = SettingsWindow()
 
         self.ui.setupUi(self)
-        self.result = []
-        
-        self.crossplay = True
+
+        self.requests = []
+
+        self.name = "My name"
         self.platform = "pc"
+        self.crossplay = True
 
         # self.platform = settings["platform"]
         # self.crossplay = settings["crossplatform"]
@@ -40,7 +43,14 @@ class MainWindow(QMainWindow):
         self.ui.add_btn.setCursor(QCursor(Qt.PointingHandCursor))
         self.ui.delete_btn.setCursor(QCursor(Qt.PointingHandCursor))
         self.ui.settings_btn.clicked.connect(self.open_settings)
-        self.apply_settings()
+
+        try:
+            self.apply_settings()
+        except:
+            SettingsWindow()
+
+        self.apply_requests()
+
 
     def eventFilter(self, obj, event):
         if obj == self.ui.marketTable.viewport():
@@ -76,6 +86,16 @@ class MainWindow(QMainWindow):
             data["wishedPrice"],
             self.crossplay
         )
+
+        self.requests.append({
+            "name": data["name"],
+            "type": data["type"],
+            "quantity": data["quantity"],
+            "wishedPrice": data["wishedPrice"]
+        })
+
+        with open("requests.json", "w", encoding="UTF-8") as file:
+            json.dump(self.requests, file)
 
         if not result:
             info_message = QMessageBox(window)
@@ -192,6 +212,14 @@ class MainWindow(QMainWindow):
             crossplay_map.get(settings["crossplay"])
         )
 
+    def apply_requests(self):
+        if not os.path.exists("requests.json"):
+            return
+        with open("requests.json", "r", encoding="UTF-8") as file:
+            r = json.load(file)
+            for i in r:
+                self.handle_search(i)
+
 class SearchWindow(QWidget):
     submitted = pyqtSignal(dict)
     def __init__(self, platform: str = "pc", crossplatform: bool = True):
@@ -200,9 +228,6 @@ class SearchWindow(QWidget):
 
         self.platform = platform
         self.crossplatform = crossplatform
-        
-        
-        self.result = []
 
         label1 = QLabel("Название предмета")
         label2 = QLabel("Желаемая цена")
@@ -309,13 +334,16 @@ class SettingsWindow(QDialog):
 
             with open("settings.json", "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=4, ensure_ascii=False)
+            window.name = data["username"]
+            window.platform = data["platform"]
+            window.crossplay = data["crossplay"]
             self.accept()
         else:
             self.reject()
 
     def load_settings(self):
         try:
-            with open("settings.json", "r", encoding="utf-8") as f:
+            with open("settings.json", "r+", encoding="utf-8") as f:
                 data = json.load(f)
 
                 self.ui.lineEdit.setText(data["username"])
@@ -328,6 +356,11 @@ class SettingsWindow(QDialog):
 
         except FileNotFoundError:
             pass
+        except JSONDecodeError:
+            with open("settings.json", "r+", encoding="utf-8") as f:
+                json.dump({"username": "",
+                           "platform": "pc",
+                           "crossplay": True}, f)
 
 
 if __name__ == '__main__':
