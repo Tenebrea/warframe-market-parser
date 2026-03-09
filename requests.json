@@ -1,0 +1,20 @@
+[
+    {
+        "name": "archon flow",
+        "type": "buy",
+        "quantity": 1,
+        "wishedPrice": 90
+    },
+    {
+        "name": "wukong prime set",
+        "type": "buy",
+        "quantity": 1,
+        "wishedPrice": 90
+    },
+    {
+        "name": "archon continuity",
+        "type": "buy",
+        "quantity": 1,
+        "wishedPrice": 90
+    }
+]

@@ -13,7 +13,7 @@ import json
 from PyQt5.QtWidgets import QApplication, QComboBox, QPushButton, QTableWidgetItem, QSpinBox, QMainWindow, QLineEdit, \
     QWidget, QVBoxLayout, QLabel, QMessageBox, QDialog
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import QTimer, Qt, pyqtSignal
+from PyQt5.QtCore import QTimer, Qt, pyqtSignal, QRect
 from main_gui import Ui_MainWindow
 import threading
 
@@ -26,12 +26,12 @@ class MainWindow(QMainWindow):
         self.settings_window = SettingsWindow()
 
         self.ui.setupUi(self)
-
         self.requests = []
 
         self.name = "My name"
         self.platform = "pc"
         self.crossplay = True
+
 
         # self.platform = settings["platform"]
         # self.crossplay = settings["crossplatform"]
@@ -41,7 +41,9 @@ class MainWindow(QMainWindow):
         self.ui.buy_btn_2.clicked.connect(self.search)
         self.ui.buy_btn_2.setCursor(QCursor(Qt.PointingHandCursor))
         self.ui.add_btn.setCursor(QCursor(Qt.PointingHandCursor))
+        self.ui.add_btn.clicked.connect(self.save_requests)
         self.ui.delete_btn.setCursor(QCursor(Qt.PointingHandCursor))
+        self.ui.delete_btn.clicked.connect(self.delete_requests)
         self.ui.settings_btn.clicked.connect(self.open_settings)
 
         try:
@@ -49,8 +51,10 @@ class MainWindow(QMainWindow):
         except:
             SettingsWindow()
 
-        self.apply_requests()
-
+        try:
+            self.apply_requests()
+        except:
+            pass
 
     def eventFilter(self, obj, event):
         if obj == self.ui.marketTable.viewport():
@@ -94,8 +98,8 @@ class MainWindow(QMainWindow):
             "wishedPrice": data["wishedPrice"]
         })
 
-        with open("requests.json", "w", encoding="UTF-8") as file:
-            json.dump(self.requests, file)
+        # with open("requests.json", "w", encoding="UTF-8") as file:
+        #     json.dump(self.requests, file)
 
         if not result:
             info_message = QMessageBox(window)
@@ -162,6 +166,40 @@ class MainWindow(QMainWindow):
         button.clicked.connect(lambda x, r=row: self.message_text(r))
         button.show()
 
+    # def delete_selected_request(self):
+    #     row = self.ui.marketTable.currentRow()
+    #     if row == -1:
+    #         QMessageBox.warning(self, "Ошибка", "Необходимо выбрать заказ")
+    #         return
+    #
+    #     # удалить запись из таблицы
+    #     self.ui.marketTable.removeRow(row)
+    #
+    #     # удалить соответствующую кнопку
+    #     button = self.findChild(QtWidgets.QPushButton, f"buy_btn_{row}")
+    #     if button:
+    #         button.deleteLater()  # удаляет кнопку из интерфейса
+    #
+    #     # обновить JSON
+    #     if os.path.exists("requests.json"):
+    #         with open("requests.json", "r", encoding="utf-8") as f:
+    #             requests_list = json.load(f)
+    #         if row < len(requests_list):
+    #             requests_list.pop(row)
+    #         with open("requests.json", "w", encoding="utf-8") as f:
+    #             json.dump(requests_list, f, indent=4, ensure_ascii=False)
+    #
+    #     # пересчитать все кнопки
+    #     for r in range(self.ui.marketTable.rowCount()):
+    #         btn = self.findChild(QtWidgets.QPushButton, f"buy_btn_{r + 1}")  # предыдущие кнопки с r+1
+    #         if btn:
+    #             btn.setObjectName(f"buy_btn_{r}")  # переименовать
+    #             x = self.ui.buy_btn.x()
+    #             y = self.ui.buy_btn.y() + 50 * r
+    #             width = self.ui.buy_btn.width()
+    #             height = self.ui.buy_btn.height() + 10
+    #             btn.setGeometry(QtCore.QRect(x, y, width, height))
+
     def message_text(self, row):
         ingameName = self.ui.marketTable.item(row, 1).text()
         name = self.ui.marketTable.item(row, 2).text()
@@ -220,14 +258,65 @@ class MainWindow(QMainWindow):
             for i in r:
                 self.handle_search(i)
 
+    def save_requests(self):
+        row = self.ui.marketTable.currentRow()
+        if row == -1:
+            QMessageBox.warning(self, "Ошибка", "Необходимо выбрать запись")
+            return
+
+        else:
+            self.requests.append({
+                "name": self.ui.marketTable.item(row, 2).text(),
+                "type": self.ui.marketTable.item(row, 3).text(),
+                "quantity": self.ui.marketTable.item(row, 4).text(),
+                "wishedPrice": self.ui.marketTable.item(row, 6).text(),
+            })
+
+            print(self.requests)
+
+            with open("requests.json", "w", encoding="UTF-8") as file:
+                json.dump(self.requests, file)
+                saving = QMessageBox(window)
+                saving.setWindowTitle("Сообщение")
+                saving.setText(self, "Ваш заказ успешно сохранён!")
+                saving.exec_()
+
+    def delete_requests(self):
+        row = self.ui.marketTable.currentRow()
+        if row == -1:
+            QMessageBox.warning(self, "Ошибка", "Необходимо выбрать заказ")
+            return
+        else:
+            self.requests.pop(row)
+
+            button = self.findChild(QtWidgets.QPushButton, f"buy_btn_{row}")
+            if button:
+                button.deleteLater()
+            with open("requests.json", "w", encoding="UTF-8") as file:
+                json.dump(self.requests, file, indent=4)
+
+            self.ui.marketTable.removeRow(row)
+            QMessageBox.information(self, "Сообщение", "Запись успешно удалена")
+            row_count = self.ui.marketTable.rowCount()
+            y_buy_btn = self.ui.buy_btn_2.y() + 55 * int(row)
+            self.ui.buy_btn_2.setGeometry(QtCore.QRect(1130, y_buy_btn, 111, 38))
+            # self.delete_selected_request()
+
+
+            # смотрим номер записи в таблице (row)
+            # в json находим соответствие по номеру в таблице и номеру в json (data[0] == i[0]: pop())
+            # удаляем и уведомляем
+
+
+
 class SearchWindow(QWidget):
     submitted = pyqtSignal(dict)
-    def __init__(self, platform: str = "pc", crossplatform: bool = True):
+    def __init__(self, platform: str = "pc", crossplay: bool = True):
         super().__init__()
         layout = QVBoxLayout()
 
         self.platform = platform
-        self.crossplatform = crossplatform
+        self.crossplay = crossplay
 
         label1 = QLabel("Название предмета")
         label2 = QLabel("Желаемая цена")
@@ -334,9 +423,9 @@ class SettingsWindow(QDialog):
 
             with open("settings.json", "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=4, ensure_ascii=False)
-            window.name = data["username"]
-            window.platform = data["platform"]
-            window.crossplay = data["crossplay"]
+                window.name = data["username"]
+                window.platform = data["platform"]
+                window.crossplay = data["crossplay"]
             self.accept()
         else:
             self.reject()
@@ -356,6 +445,7 @@ class SettingsWindow(QDialog):
 
         except FileNotFoundError:
             pass
+
         except JSONDecodeError:
             with open("settings.json", "r+", encoding="utf-8") as f:
                 json.dump({"username": "",

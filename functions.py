@@ -49,7 +49,7 @@ def build_slug_dict():
     return slug_dict
 
 # каждый раз при запуске
-ITEMS_DICT = {}#build_slug_dict()
+ITEMS_DICT = build_slug_dict()
 
 # через фнкц приводит текст к понимаемому запросами, после в словаре ищет соответствие и проводит замену
 def warframe_to_url(text: str) -> str:
