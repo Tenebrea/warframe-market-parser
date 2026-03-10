@@ -3,7 +3,6 @@ import sys
 from json import JSONDecodeError
 from unittest import result
 
-import settings_manager
 from PyQt5.QtGui import QCursor, QPixmap
 
 import functions
@@ -19,6 +18,7 @@ import threading
 
 from second_gui import Ui_SettingsWindow
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -31,7 +31,6 @@ class MainWindow(QMainWindow):
         self.name = "My name"
         self.platform = "pc"
         self.crossplay = True
-
 
         # self.platform = settings["platform"]
         # self.crossplay = settings["crossplatform"]
@@ -104,7 +103,8 @@ class MainWindow(QMainWindow):
         if not result:
             info_message = QMessageBox(window)
             info_message.setWindowTitle("Ошибка")
-            info_message.setText(f"Заказ ' {data['name']} ' стоимостью {data['wishedPrice']} ед. платины не найден.")
+            info_message.setText(
+                f"Заказ ' {data['name']} ' стоимостью {data['wishedPrice']} ед. платины не найден.")
             info_message.exec_()
             return
 
@@ -118,7 +118,8 @@ class MainWindow(QMainWindow):
 
             if image_bytes is not None:
                 pixmap = functions.bytes_to_image(image_bytes)
-                pixmap = pixmap.scaled(45, 45, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                pixmap = pixmap.scaled(
+                    45, 45, Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 label = QLabel()
                 label.setPixmap(pixmap)
                 label.setAlignment(Qt.AlignCenter)
@@ -145,7 +146,8 @@ class MainWindow(QMainWindow):
 
             y_buy_btn = self.ui.buy_btn_2.y() + 55 * int(row) + 15
 
-            self.ui.buy_btn_2.setGeometry(QtCore.QRect(1130, y_buy_btn, 111, 38))
+            self.ui.buy_btn_2.setGeometry(
+                QtCore.QRect(1130, y_buy_btn, 111, 38))
 
         self.ui.marketTable.setSortingEnabled(True)
 
@@ -166,39 +168,6 @@ class MainWindow(QMainWindow):
         button.clicked.connect(lambda x, r=row: self.message_text(r))
         button.show()
 
-    # def delete_selected_request(self):
-    #     row = self.ui.marketTable.currentRow()
-    #     if row == -1:
-    #         QMessageBox.warning(self, "Ошибка", "Необходимо выбрать заказ")
-    #         return
-    #
-    #     # удалить запись из таблицы
-    #     self.ui.marketTable.removeRow(row)
-    #
-    #     # удалить соответствующую кнопку
-    #     button = self.findChild(QtWidgets.QPushButton, f"buy_btn_{row}")
-    #     if button:
-    #         button.deleteLater()  # удаляет кнопку из интерфейса
-    #
-    #     # обновить JSON
-    #     if os.path.exists("requests.json"):
-    #         with open("requests.json", "r", encoding="utf-8") as f:
-    #             requests_list = json.load(f)
-    #         if row < len(requests_list):
-    #             requests_list.pop(row)
-    #         with open("requests.json", "w", encoding="utf-8") as f:
-    #             json.dump(requests_list, f, indent=4, ensure_ascii=False)
-    #
-    #     # пересчитать все кнопки
-    #     for r in range(self.ui.marketTable.rowCount()):
-    #         btn = self.findChild(QtWidgets.QPushButton, f"buy_btn_{r + 1}")  # предыдущие кнопки с r+1
-    #         if btn:
-    #             btn.setObjectName(f"buy_btn_{r}")  # переименовать
-    #             x = self.ui.buy_btn.x()
-    #             y = self.ui.buy_btn.y() + 50 * r
-    #             width = self.ui.buy_btn.width()
-    #             height = self.ui.buy_btn.height() + 10
-    #             btn.setGeometry(QtCore.QRect(x, y, width, height))
 
     def message_text(self, row):
         ingameName = self.ui.marketTable.item(row, 1).text()
@@ -211,13 +180,9 @@ class MainWindow(QMainWindow):
 
         copy_message = QMessageBox(window)
         copy_message.setWindowTitle("Сообщение")
-        copy_message.setText(f"Сообщение для связи с игроком {ingameName} скопировано!")
+        copy_message.setText(
+            f"Сообщение для связи с игроком {ingameName} скопировано!")
         copy_message.exec_()
-
-    # def show_settings(self):
-    #     settings_window = SettingsWindow()
-    #     if settings_window.exec_() == QDialog.Accepted:
-    #         self.apply_settings()
 
     def apply_settings(self):
         if not os.path.exists("settings.json"):
@@ -268,18 +233,16 @@ class MainWindow(QMainWindow):
             self.requests.append({
                 "name": self.ui.marketTable.item(row, 2).text(),
                 "type": self.ui.marketTable.item(row, 3).text(),
-                "quantity": self.ui.marketTable.item(row, 4).text(),
-                "wishedPrice": self.ui.marketTable.item(row, 6).text(),
+                "quantity": int(self.ui.marketTable.item(row, 4).text()),
+                "wishedPrice": int(self.ui.marketTable.item(row, 6).text()),
             })
 
             print(self.requests)
 
             with open("requests.json", "w", encoding="UTF-8") as file:
                 json.dump(self.requests, file)
-                saving = QMessageBox(window)
-                saving.setWindowTitle("Сообщение")
-                saving.setText(self, "Ваш заказ успешно сохранён!")
-                saving.exec_()
+                QMessageBox.about(window, "Сообщение",
+                                  "Ваш заказ успешно сохранён!")
 
     def delete_requests(self):
         row = self.ui.marketTable.currentRow()
@@ -296,21 +259,17 @@ class MainWindow(QMainWindow):
                 json.dump(self.requests, file, indent=4)
 
             self.ui.marketTable.removeRow(row)
-            QMessageBox.information(self, "Сообщение", "Запись успешно удалена")
+            QMessageBox.information(
+                self, "Сообщение", "Запись успешно удалена")
             row_count = self.ui.marketTable.rowCount()
             y_buy_btn = self.ui.buy_btn_2.y() + 55 * int(row)
-            self.ui.buy_btn_2.setGeometry(QtCore.QRect(1130, y_buy_btn, 111, 38))
-            # self.delete_selected_request()
-
-
-            # смотрим номер записи в таблице (row)
-            # в json находим соответствие по номеру в таблице и номеру в json (data[0] == i[0]: pop())
-            # удаляем и уведомляем
-
+            self.ui.buy_btn_2.setGeometry(
+                QtCore.QRect(1130, y_buy_btn, 111, 38))
 
 
 class SearchWindow(QWidget):
     submitted = pyqtSignal(dict)
+
     def __init__(self, platform: str = "pc", crossplay: bool = True):
         super().__init__()
         layout = QVBoxLayout()
@@ -356,9 +315,8 @@ class SearchWindow(QWidget):
 
         self.setLayout(layout)
 
-
     def sub(self):
-        try:            
+        try:
             data = {
                 "name": self.name.text(),
                 "wishedPrice": int(self.max_price.text()),
@@ -381,6 +339,7 @@ class PopupWindow(QWidget):
 
         self.setLayout(layout)
 
+
 class SettingsWindow(QDialog):
     def __init__(self):
         super().__init__()
@@ -398,7 +357,6 @@ class SettingsWindow(QDialog):
 
         self.ui.comboBox_2.setItemData(0, True)
         self.ui.comboBox_2.setItemData(1, False)
-
 
     def save_button_clicked(self):
         name = self.ui.lineEdit.text()
@@ -440,7 +398,8 @@ class SettingsWindow(QDialog):
                 index_platform = self.ui.comboBox.findData(data["platform"])
                 self.ui.comboBox.setCurrentIndex(index_platform)
 
-                index_crossplay = self.ui.comboBox_2.findData(data["crossplay"])
+                index_crossplay = self.ui.comboBox_2.findData(
+                    data["crossplay"])
                 self.ui.comboBox_2.setCurrentIndex(index_crossplay)
 
         except FileNotFoundError:

@@ -31,6 +31,7 @@ def normalize(text: str) -> str:
 # для создания словаря, который позволяет корректировать другие языки
 # ВАЖНО ИНИЦИИРОВАТЬ КАЖДЫЙ РАЗ ПРИ ЗАПУСКЕ
 
+
 def build_slug_dict():
     headers = {
         "Language": "ru"
@@ -48,10 +49,13 @@ def build_slug_dict():
 
     return slug_dict
 
+
 # каждый раз при запуске
 ITEMS_DICT = build_slug_dict()
 
 # через фнкц приводит текст к понимаемому запросами, после в словаре ищет соответствие и проводит замену
+
+
 def warframe_to_url(text: str) -> str:
     text = normalize(text)
 
@@ -63,6 +67,7 @@ def warframe_to_url(text: str) -> str:
             return slug
 
     return None
+
 
 def get_api_icon(name: str):
     url_name = warframe_to_url(name)
@@ -95,12 +100,11 @@ def download_icon_bytes(url: str):
     response.raise_for_status()
     return response.content
 
+
 def bytes_to_image(bytes: bytes):
     pixmap = QPixmap()
     pixmap.loadFromData(bytes)
     return pixmap
-
-
 
 
 # основная функция обработки, по частям принимает запрос, после делает вывод самого лучшего трейда
@@ -112,7 +116,8 @@ def collect_data_parts(name: str, type: str, platform: str, quantity: int = 1, w
         return
 
     result = []
-    r = requests.get(f"https://api.warframe.market/v2/orders/item/{url_name}/top")
+    r = requests.get(
+        f"https://api.warframe.market/v2/orders/item/{url_name}/top")
     r_json = r.json()
 
     orders = r_json["data"][type]
@@ -124,10 +129,11 @@ def collect_data_parts(name: str, type: str, platform: str, quantity: int = 1, w
     for item in orders:
         if item["user"]["status"] == "offline":
             continue
-        if item["user"]["platform"] != platform:
-            continue
         if crossplay != item["user"]["crossplay"]:
             continue
+        if crossplay == False:
+            if item["user"]["platform"] != platform:
+                continue
         if item["user"]["status"] != "ingame":
             continue
         # if type  == "sell" and item["platinum"] >= want_platinum:
@@ -135,14 +141,12 @@ def collect_data_parts(name: str, type: str, platform: str, quantity: int = 1, w
         # if type == "buy" and item["platinum"] <= want_platinum:
         #     continue
         if item['quantity'] > 1 and item["quantity"] <= quantity:
-                continue
+            continue
         best_order = item
         break
     else:
-        # print("ЗакаZOV под ваши требования не найдены")
         return
 
-# мб в список ({} -> [])
     result_item = {
         "ingameName": best_order["user"]["ingameName"],
         "name": url_name,
@@ -160,5 +164,3 @@ def collect_data_parts(name: str, type: str, platform: str, quantity: int = 1, w
     return result
 
 
-
-# print(collect_data_parts("Атлас прайм сет", "sell", "pc", 1, 70))
