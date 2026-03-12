@@ -144,7 +144,10 @@ class MainWindow(QMainWindow):
 
             self.buy_button_copy(row)
 
-            y_buy_btn = self.ui.buy_btn_2.y() + 55 * int(row) + 15
+            if row <= 1:
+                y_buy_btn = self.ui.buy_btn_2.y() + 55 * row + 15
+            else:
+                y_buy_btn = self.ui.buy_btn_2.y() + 55
 
             self.ui.buy_btn_2.setGeometry(
                 QtCore.QRect(1130, y_buy_btn, 111, 38))
@@ -153,7 +156,7 @@ class MainWindow(QMainWindow):
 
     def buy_button_copy(self, row):
         x = self.ui.buy_btn.x()
-        y = self.ui.buy_btn.y() + 50 * int(row)
+        y = self.ui.buy_btn.y() + 50 * row
         width = self.ui.buy_btn.width()
         height = self.ui.buy_btn.height() + 10
 
@@ -229,42 +232,46 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Ошибка", "Необходимо выбрать запись")
             return
 
-        else:
-            self.requests.append({
-                "name": self.ui.marketTable.item(row, 2).text(),
-                "type": self.ui.marketTable.item(row, 3).text(),
-                "quantity": int(self.ui.marketTable.item(row, 4).text()),
-                "wishedPrice": int(self.ui.marketTable.item(row, 6).text()),
-            })
+        # else:
+        #     self.requests.append({
+        #         "name": self.ui.marketTable.item(row, 2).text(),
+        #         "type": self.ui.marketTable.item(row, 3).text(),
+        #         "quantity": int(self.ui.marketTable.item(row, 4).text()),
+        #         "wishedPrice": int(self.ui.marketTable.item(row, 6).text()),
+        #     })
+        #
+        #     print(self.requests)
 
-            print(self.requests)
-
-            with open("requests.json", "w", encoding="UTF-8") as file:
-                json.dump(self.requests, file)
-                QMessageBox.about(window, "Сообщение",
-                                  "Ваш заказ успешно сохранён!")
+        with open("requests.json", "w", encoding="UTF-8") as file:
+            json.dump(self.requests, file, ensure_ascii=False, indent=4)
+            QMessageBox.about(window, "Сообщение",
+                              "Ваш заказ успешно сохранён!")
 
     def delete_requests(self):
         row = self.ui.marketTable.currentRow()
         if row == -1:
             QMessageBox.warning(self, "Ошибка", "Необходимо выбрать заказ")
             return
-        else:
-            self.requests.pop(row)
 
-            button = self.findChild(QtWidgets.QPushButton, f"buy_btn_{row}")
-            if button:
-                button.deleteLater()
-            with open("requests.json", "w", encoding="UTF-8") as file:
-                json.dump(self.requests, file, indent=4)
+        self.requests.pop(row)
 
-            self.ui.marketTable.removeRow(row)
-            QMessageBox.information(
-                self, "Сообщение", "Запись успешно удалена")
-            row_count = self.ui.marketTable.rowCount()
-            y_buy_btn = self.ui.buy_btn_2.y() + 55 * int(row)
-            self.ui.buy_btn_2.setGeometry(
-                QtCore.QRect(1130, y_buy_btn, 111, 38))
+        buttons = [
+            b for b in self.findChildren(QtWidgets.QPushButton)
+            if b.objectName().startswith("buy_btn_")
+        ]
+
+        if buttons:
+            buttons[-1].deleteLater()
+
+        with open("requests.json", "w", encoding="UTF-8") as file:
+            json.dump(self.requests, file, indent=4, ensure_ascii=False)
+
+        self.ui.marketTable.removeRow(row)
+        QMessageBox.information(
+            self, "Сообщение", "Запись успешно удалена")
+        y_buy_btn = self.ui.buy_btn_2.y() - 55
+        self.ui.buy_btn_2.setGeometry(
+            QtCore.QRect(1130, y_buy_btn, 111, 38))
 
 
 class SearchWindow(QWidget):
