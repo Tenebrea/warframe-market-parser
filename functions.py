@@ -72,6 +72,7 @@ def warframe_to_url(text: str) -> str:
 def get_api_icon(name: str):
     url_name = warframe_to_url(name)
 
+
     icon_url = requests.get(f"https://api.warframe.market/v2/items/{url_name}")
     icon_json = icon_url.json()
     # print(icon_json)
@@ -109,6 +110,8 @@ def bytes_to_image(bytes: bytes):
 
 # основная функция обработки, по частям принимает запрос, после делает вывод самого лучшего трейда
 def collect_data_parts(name: str, type: str, platform: str, quantity: int = 1, want_platinum: int = 1, crossplay=True):
+    if not name:
+        return
     url_name = warframe_to_url(name)
 
     if not url_name:
@@ -162,5 +165,3 @@ def collect_data_parts(name: str, type: str, platform: str, quantity: int = 1, w
 
     result.append(result_item)
     return result
-
-
