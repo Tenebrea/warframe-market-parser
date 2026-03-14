@@ -3,16 +3,16 @@ import sys
 from json import JSONDecodeError
 from unittest import result
 
-from PyQt5.QtGui import QCursor, QPixmap
+from PyQt5.QtGui import QCursor, QPixmap, QDesktopServices, QIcon
 
 import functions
 import functions
 import requests
 import json
 from PyQt5.QtWidgets import QApplication, QComboBox, QPushButton, QTableWidgetItem, QSpinBox, QMainWindow, QLineEdit, \
-    QWidget, QVBoxLayout, QLabel, QMessageBox, QDialog
+    QWidget, QVBoxLayout, QLabel, QMessageBox, QDialog, QHBoxLayout
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import QTimer, Qt, pyqtSignal, QRect
+from PyQt5.QtCore import QTimer, Qt, pyqtSignal, QRect, QUrl
 from main_gui import Ui_MainWindow
 import threading
 
@@ -108,13 +108,38 @@ class MainWindow(QMainWindow):
             info_message.exec_()
             return
 
+        icon_url = functions.get_api_icon(data["name"])
+        image_bytes = functions.download_icon_bytes(icon_url)
+
+        self.ui.marketTable.setSortingEnabled(False)
+
         for i in result:
-            icon_url = functions.get_api_icon(data["name"])
-            image_bytes = functions.download_icon_bytes(icon_url)
+            stats_url = functions.get_statistics_url(i["name"])
 
             row = self.ui.marketTable.rowCount()
             self.ui.marketTable.insertRow(row)
             self.ui.marketTable.setRowHeight(row, 50)
+
+            graph_icon = QIcon()
+            graph_icon.addPixmap(QPixmap("icons/stats_icon.svg"), QIcon.Normal, QIcon.Off)
+
+            graph_btn = QPushButton("График")
+            graph_btn.setStyleSheet("color: #18252a;"
+                                    "background-color: #418fa5;"
+                                    "font-weight: bold;")
+            graph_btn.setIcon(graph_icon)
+            graph_btn.setFixedSize(135, 45)
+            graph_btn.setToolTip(f"График цен {i['name'].replace('_', ' ').title()}")
+            graph_btn.clicked.connect(lambda _, url=stats_url: QDesktopServices.openUrl(QUrl(url)))
+
+            cell_widget = QWidget()
+            layout = QHBoxLayout(cell_widget)
+            layout.addWidget(graph_btn)
+            layout.setAlignment(Qt.AlignCenter)
+            layout.setContentsMargins(0, 0, 0, 0)
+            cell_widget.setLayout(layout)
+
+            self.ui.marketTable.setCellWidget(row, 7, cell_widget)
 
             if image_bytes is not None:
                 pixmap = functions.bytes_to_image(image_bytes)
@@ -144,10 +169,10 @@ class MainWindow(QMainWindow):
 
             self.buy_button_copy(row)
 
-            if row <= 1:
+            if row < 1:
                 y_buy_btn = self.ui.buy_btn_2.y() + 55 * row + 15
             else:
-                y_buy_btn = self.ui.buy_btn_2.y() + 55
+                y_buy_btn = self.ui.buy_btn_2.y() + 50
 
             self.ui.buy_btn_2.setGeometry(
                 QtCore.QRect(1130, y_buy_btn, 111, 38))

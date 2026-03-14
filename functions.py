@@ -72,7 +72,6 @@ def warframe_to_url(text: str) -> str:
 def get_api_icon(name: str):
     url_name = warframe_to_url(name)
 
-
     icon_url = requests.get(f"https://api.warframe.market/v2/items/{url_name}")
     icon_json = icon_url.json()
     # print(icon_json)
@@ -165,3 +164,6 @@ def collect_data_parts(name: str, type: str, platform: str, quantity: int = 1, w
 
     result.append(result_item)
     return result
+
+def get_statistics_url(item_url_name: str, lang="ru"):
+    return f"https://warframe.market/{lang}/items/{item_url_name}/statistics"
