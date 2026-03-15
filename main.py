@@ -130,6 +130,7 @@ class MainWindow(QMainWindow):
             graph_btn.setIcon(graph_icon)
             graph_btn.setFixedSize(135, 45)
             graph_btn.setToolTip(f"График цен {i['name'].replace('_', ' ').title()}")
+            graph_btn.setCursor(QCursor(Qt.PointingHandCursor))
             graph_btn.clicked.connect(lambda _, url=stats_url: QDesktopServices.openUrl(QUrl(url)))
 
             cell_widget = QWidget()
