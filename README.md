@@ -50,6 +50,7 @@
 - typing_extensions==4.15.0
 - urllib3==2.6.3
 - websocket-client==1.9.0
+- pyinstaller==6.19.0
 
 tests.py — Модульные и интеграционные тесты для warframe.market приложения.
 

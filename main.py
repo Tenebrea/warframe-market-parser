@@ -45,6 +45,10 @@ class MainWindow(QMainWindow):
         self.ui.delete_btn.clicked.connect(self.delete_requests)
         self.ui.settings_btn.clicked.connect(self.open_settings)
 
+        if self.ui.marketTable.rowCount() == 0:
+            self.ui.buy_btn.hide()
+            self.ui.buy_btn_2.setGeometry(QtCore.QRect(1130, 230, 111, 38))
+
         try:
             self.apply_settings()
         except:
@@ -171,7 +175,7 @@ class MainWindow(QMainWindow):
             self.buy_button_copy(row)
 
             if row < 1:
-                y_buy_btn = self.ui.buy_btn_2.y() + 55 * row + 15
+                y_buy_btn = self.ui.buy_btn_2.y() + 45
             else:
                 y_buy_btn = self.ui.buy_btn_2.y() + 50
 
